@@ -1,23 +1,26 @@
-// Load the necessary servers.
-var sys = require( "sys" );
-var http = require( "http" );
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+var UUID = require('node-uuid');
 
-// Create our HTTP server.
-var server = http.createServer(
-function( request, response ){
- 
- 
-// Create a SUPER SIMPLE response.
-response.writeHead( 200, {"content-type": "text/plain"} );
-response.write( "Hello, world!\n\nLove,\nAzure, Ubuntu, and Node!\n" );
-response.end();
- 
- 
-}
-);
- 
-// Point the HTTP server to port 8080.
-server.listen( 8080 );
- 
-// For logging....
-sys.puts( "Server is running on 8080" );
+app.get('/', function(req, res) {
+    res.sendFile(__dirname + '/index.html');
+});
+
+io.on('connection', function(socket){
+    socket.serverid = UUID().slice(0, 5);
+
+    //io.emit('connection', socket.serverid + " has connected");
+
+    socket.on('disconnect', function(){
+        io.emit('disconnect', socket.serverid + " has disconnected");
+    });
+
+    socket.on('chat message', function(msg){
+        io.emit('chat message', socket.serverid + ": " + msg);
+    });
+});
+
+http.listen(8080, function() {
+    console.log('listening on  *:8080');
+});
