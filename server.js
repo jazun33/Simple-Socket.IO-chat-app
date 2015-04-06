@@ -2,9 +2,6 @@
 var sys = require( "sys" );
 var http = require( "http" );
 
-//this is a cool comment, huh?
-//Yes it is
- 
 // Create our HTTP server.
 var server = http.createServer(
 function( request, response ){
